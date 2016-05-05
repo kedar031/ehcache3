@@ -12,7 +12,7 @@ endif::notBuildingForSite[]
 == Introduction
 
 As with the standalone cache, in order to use the clustered EhCache you will need to configure Clustered cache manager and the cache.
-This is currently in the active development mode and the complete feature to be out very soon, stay tuned!
+This is currently in the active development mode and the complete feature to be out very soon, stay tuned! 
 
 === Clustered cache manager
 
