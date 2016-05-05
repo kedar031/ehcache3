@@ -1,0 +1,67 @@
+---
+---
+= Clustered Cache
+ifndef::sourcedir[]
+include::common.adoc[]
+endif::sourcedir[]
+
+ifdef::notBuildingForSite[]
+include::menu.adoc[]
+endif::notBuildingForSite[]
+
+== Introduction
+
+As with the standalone cache, in order to use the clustered EhCache you will need to configure Clustered cache manager and the cache.
+This is currently in the active development mode and the complete feature to be out very soon, stay tuned!
+
+=== Clustered cache manager
+
+In addition to the steps performed for creating standalone cache manager, clustered cache manager creation requires you to provide the clustering
+service configuration:
+
+[source,java,indent=0]
+----
+include::{sourcedir}/clustered/client/src/test/java/org/ehcache/clustered/client/docs/GettingStarted.java[tag=clusteredCacheManagerExample]
+----
+
+<1> Static method `org.ehcache.config.builders.CacheManagerBuilder.newCacheManagerBuilder` that returns a new `org.ehcache.config.builders.CacheManagerBuilder`
+    instance;
+<2> Use the ClusteringServiceConfigurationBuilder's static method `.cluster(URI)` for connecting to the clustered cache manager at URI specified and return the
+    clustering service configuration builder instance.
+    Sample URI provided in the example is pointing to the clustering cache manager with the name `my-application` and with the query-param `auto-create` creates
+    the clustered cache manager in the server if it doesn't already exists.
+<3> Provide the cache configuration to be created with the resource pool.
+<4> creates fully instantiated and initialized cache manager ready to be used.
+<5> Close the cache manager.
+
+=== Clustered cache manager with server side pools
+
+Server side configurations can also be specified when creating clustered cache manager:
+
+[source,java,indent=0]
+----
+include::{sourcedir}/clustered/client/src/test/java/org/ehcache/clustered/client/docs/GettingStarted.java[tag=clusteredCacheManagerWithServerSideConfigExample]
+----
+
+<1> Static method `org.ehcache.config.builders.CacheManagerBuilder.newCacheManagerBuilder` that returns a new `org.ehcache.config.builders.CacheManagerBuilder`
+    instance;
+<2> Use the `ClusteringServiceConfigurationBuilder`'s static method `.cluster(URI)` to connect to a clustered cache manager running at the URI specified and return the
+    clustering service configuration builder instance.
+<3> `defaultServerResource(String)` on ClusteringServiceConfigurationBuilder instance sets the default server resource for pools and caches for the cache manager with the
+     name of server resource in the server.
+    From the example, cache manager sets its default server resource to `primary-server-resource` present in the server.
+<4> Adds a resource pool for the cache manager of specified name and size consumed out of default server resource provided in Step 3.
+    `.resourcePool(String, long, MemoryUnit )` takes the name of resource pool to be allocated, size of the resource pool and the MemoryUnit of size specified as first,
+    second and third arguments respectively.
+<5> Adds a resource pool consumed out of a secondary (non-default) server resource already existing on server. This is similar to Step 4 with an additional argument
+    of the secondary server resource name in the end.
+    This demonstrates that a clustered cache manager can have multiple resource pools created out of server resources.
+<6> Provide the cache configuration to be created
+<7> Adding heap resource for the cache.
+<8> Allocates clustered resources of the given/fixed size to the cache from the specified cache manager resource pool.`.fixed(String , long , MemoryUnit )` allocates the resources from
+    the resource pool name specified in the first argument. Fixed size of the memory and its MemoryUnit being the 2nd and 3rd arguments respectively.
+    In the example, fixed resource pool of 32G are allocated for cache from the `resource-pool-a` created in Step 4.
+    Caches can also be configured with shared resource pool where multiple caches can share the resources from same resource pool. This can be achieved using `.shared(String)` where
+    name of the server resource pool to be shared from, is the argument required.
+<9> creates fully instantiated and initialized cache manager ready to be used.
+<10> Close the cache manager.
